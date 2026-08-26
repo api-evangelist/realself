@@ -1,0 +1,122 @@
+generated: '2026-08-26'
+method: derived
+source: >-
+  json-schema/*.json (harvested verbatim from https://api.realself.com/v1/schemas) and
+  https://github.com/RealSelf/rs-lead-sharing-subscriber-example
+summary: >-
+  Cross-cutting semantics for the only machine-readable RealSelf surface, the Lead Sharing
+  event integration and its supporting JSON Schema registry. RealSelf publishes no REST API
+  reference, so several conventions below are honestly recorded as undocumented rather than
+  guessed.
+auth_style: >-
+  SNS message signature inbound; per-lead ES512 JWS token outbound. See
+  authentication/realself-authentication.yml.
+versioning:
+  api: URL path segment — https://api.realself.com/v1/...
+  schemas: >-
+    Semantic version encoded in the schema path with hyphens, e.g.
+    /v1/schemas/leads/new-lead-webhook/1-0-0.json. Every published schema is at 1-0-0; no
+    second version of any schema has been published, so the deprecation behaviour of the
+    scheme has never been exercised in public.
+  media_type_versioning: false
+  header_versioning: false
+schema_registry:
+  index: https://api.realself.com/v1/schemas
+  format: JSON array of relative schema paths, served anonymously (HTTP 200)
+  dialects:
+  - https://json-schema.org/draft/2020-12/schema  # leads/new-lead-webhook
+  - http://json-schema.org/2019-09/schema#        # event, pages/*
+  note: >-
+    The `$id` inside the event and pages schemas omits the `/v1` segment present in the URL
+    they are actually served from (e.g. $id https://api.realself.com/schemas/event/1-0-0.json
+    served at /v1/schemas/event/1-0-0.json), so `$id` is not directly resolvable. The leads
+    schema is self-consistent. `pages/interaction` also $refs `page` over plain http.
+pagination:
+  documented: false
+  note: No paginated public collection endpoint is documented.
+filtering_and_expansion:
+  documented: false
+metadata:
+  documented: false
+request_id_tracing:
+  supported: true
+  field: requestId
+  description: >-
+    The internal event envelope schema (json-schema/realself-event-1-0-0.json) makes
+    `requestId` — "Request/correlation tracking identifier" — a REQUIRED property of every
+    event, alongside `id`, `applicationId` and `occurredAt`. There is no documented request-id
+    response header on the public HTTP surface.
+  also:
+  - originator.visitorId (from the rs-visitor-id cookie/header)
+idempotency:
+  supported: false
+  state: undocumented
+  note: >-
+    No Idempotency-Key header, no idempotent-retry guidance and no dedupe key are documented
+    for either the SNS delivery or the lead callback. SNS itself is at-least-once, so a
+    subscriber can receive the same lead twice; the only field available for dedupe is
+    `lead.id` (and the SNS `MessageId`), which RealSelf does not document as such. Recorded as
+    undocumented, not absent — no Idempotency pointer is emitted, because RealSelf does not
+    publish idempotency support.
+error_envelope:
+  public_http: >-
+    AWS API Gateway default shape — {"message": "<text>"} — observed on every probed route.
+    See errors/realself-problem-types.yml.
+  rfc9457: false
+rate_limit_signaling:
+  documented: false
+  headers_observed: []
+  note: >-
+    No X-RateLimit-*/RateLimit-* headers were returned by any anonymously reachable route.
+    See rate-limits/realself-rate-limits.yml.
+event_envelope:
+  schema: json-schema/realself-event-1-0-0.json
+  required:
+  - id
+  - domain
+  - name
+  - entity
+  - originator
+  - occurredAt
+  - requestId
+  - applicationId
+  timestamp_format: RFC 3339 section 5.6 (cited in the schema description)
+  entity_shape: 'entity.before / entity.after state pair, plus id, uri (GET) and schema (uri)'
+  note: >-
+    This envelope is RealSelf's internal domain-event contract. It is published on a public
+    URL but is not part of a documented partner subscription; only the leads webhook is.
+reversibility:
+  state: undocumented
+  grade: none
+  write_surfaces:
+  - surface: lead update callback
+    operation: 'POST/PATCH {callback} (e.g. https://api.realself.com/v1/leads/{lead_id}?token=...)'
+    operation_id: null
+    reversal_operation: null
+    window: null
+    docs: null
+    note: >-
+      The only write RealSelf exposes to a partner is posting updates back against a lead via
+      the per-lead callback URL. The published schema documents the URL and the token but not
+      the request body, the HTTP method, the allowed state transitions, or whether any update
+      can be undone or a lead status reverted. No cancel/void/reverse/restore operation is
+      documented and no window is stated.
+  - surface: SNS subscription
+    operation: SubscribeURL (confirm)
+    reversal_operation: UnsubscribeURL
+    window: 'no stated window — the UnsubscribeURL is delivered on every notification'
+    docs: https://github.com/RealSelf/rs-lead-sharing-subscriber-example#processing-notification
+    note: >-
+      This reverses the SUBSCRIPTION, not any business action, and it is an Amazon SNS
+      affordance rather than a RealSelf one. It is recorded for completeness and deliberately
+      not graded as a reversal path for the API's write surface.
+  assessment: >-
+    Not `na` — RealSelf does expose a write surface (the lead callback) — but nothing about
+    undoing a write is published, so an agent cannot know whether an action it takes can be
+    taken back. No window is asserted here because RealSelf states none.
+cross_references:
+  errors: errors/realself-problem-types.yml
+  lifecycle: lifecycle/realself-lifecycle.yml
+  authentication: authentication/realself-authentication.yml
+  rate_limits: rate-limits/realself-rate-limits.yml
+  events: asyncapi/realself-lead-sharing-asyncapi.yml

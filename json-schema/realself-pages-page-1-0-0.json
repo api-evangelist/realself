@@ -1,0 +1,1 @@
+{"$id":"https://api.realself.com/schemas/pages/page/1-0-0.json","$schema":"http://json-schema.org/2019-09/schema#","description":"Common page event properties","properties":{"ipAddress":{"description":"Hashed IP address","type":"string"},"url":{"description":"URL of the page","type":"string"}},"required":["url","ipAddress"],"type":"object"}

@@ -1,0 +1,86 @@
+generated: '2026-08-26'
+method: derived
+source: json-schema/*.json, asyncapi/realself-lead-sharing-asyncapi.yml, well-known/realself-security.txt
+standards:
+- id: json-schema-2020-12
+  conforms: true
+  evidence: >-
+    json-schema/realself-new-lead-webhook-1-0-0.json declares
+    $schema https://json-schema.org/draft/2020-12/schema
+- id: json-schema-2019-09
+  conforms: true
+  evidence: >-
+    json-schema/realself-event-1-0-0.json and the three pages/* schemas declare
+    $schema http://json-schema.org/2019-09/schema#
+- id: rfc9116-security-txt
+  conforms: true
+  evidence: >-
+    https://www.realself.com/.well-known/security.txt returns 200 with Contact,
+    Preferred-Languages and two Policy fields
+- id: rfc9116-expires-field
+  conforms: false
+  evidence: >-
+    The served security.txt omits the REQUIRED `Expires` field of RFC 9116 section 2.5.5,
+    and carries no Canonical or Encryption field.
+- id: rfc3339-timestamps
+  conforms: true
+  evidence: >-
+    json-schema/realself-event-1-0-0.json cites RFC 3339 section 5.6 for `occurredAt`
+- id: jose-jws
+  conforms: true
+  evidence: >-
+    Lead Sharing callback token is a JWS (alg ES512, typ JOSE+JSON, jku, kid) —
+    see authentication/realself-authentication.yml
+- id: aws-sns-http-subscription
+  conforms: true
+  evidence: >-
+    SubscriptionConfirmation handshake + signed Notification delivery, documented in
+    RealSelf's own subscriber reference implementation
+- id: openapi
+  conforms: false
+  evidence: >-
+    No OpenAPI/Swagger document served on www.realself.com, realself.com or
+    api.realself.com; all candidate paths returned 403 (API Gateway route miss) or the
+    marketing host's bot interstitial.
+- id: asyncapi
+  conforms: false
+  evidence: RealSelf publishes no AsyncAPI document; asyncapi/ here is derived by API Evangelist.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: 'Error envelope is the AWS API Gateway default {"message": "..."}, not application/problem+json'
+- id: oauth2
+  conforms: false
+  evidence: No oauth2 flow, authorization server metadata or scope surface published.
+- id: oidc
+  conforms: false
+- id: rfc8414-oauth-authorization-server-metadata
+  conforms: false
+  evidence: /.well-known/oauth-authorization-server returns 404 (www) / 403 (api host)
+- id: rfc8615-well-known-api-catalog
+  conforms: false
+  evidence: /.well-known/api-catalog returns 404 on www.realself.com
+- id: a2a-agent-card
+  conforms: false
+  evidence: /.well-known/agent-card.json and /.well-known/agent.json both 404 on every host
+- id: mcp
+  conforms: false
+  evidence: No MCP server published; /mcp on the API host is an API Gateway route miss (403)
+domain_standards:
+  assessed: true
+  market: consumer aesthetics / elective-treatment marketplace and lead generation
+  declared: []
+  note: >-
+    REWARD-ONLY, and nothing is claimed here. RealSelf is a consumer marketplace and lead
+    broker, not a clinical or claims system: the published contracts carry no HL7 v2/FHIR
+    resource, no X12 transaction set, no SCIM URN, no OData $metadata, no OpenRTB bid object
+    and no LTI/OneRoster shape. Its market has no widely-adopted machine-readable lead-exchange
+    standard that RealSelf could have declared and did not, so the absence is recorded rather
+    than penalised. The nearest adjacent surface — the SNS notification — is an AWS transport
+    convention, already recorded above.
+compliance_program:
+  published: false
+  certifications: []
+  note: >-
+    No trust center, SOC 2/ISO 27001/HIPAA/PCI attestation page or compliance summary was
+    found on any RealSelf host; trust.realself.com does not resolve. No `Compliance` pointer
+    is emitted.

@@ -1,18 +1,70 @@
 aid: realself
 name: RealSelf
-description: 'RealSelf is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'RealSelf is a Seattle-based consumer healthcare marketplace for elective
+  aesthetic treatments — plastic surgery, cosmetic dermatology, injectables, cosmetic
+  dentistry, hair restoration and vision correction. Consumers research procedures
+  through community reviews, before-and-after photo galleries, doctor Q&A and the
+  Worth It rating, then request consultations from the roughly 30,000 registered
+  doctors and practices on the platform. RealSelf does not operate a general-purpose
+  public developer program: its machine-readable surface is a partner Lead Sharing
+  integration that publishes new patient leads to a subscriber over Amazon SNS, plus
+  a publicly served JSON Schema registry at api.realself.com/v1/schemas covering the
+  new-lead webhook payload and the internal event/page-analytics envelopes.'
+image: https://avatars.githubusercontent.com/u/991957?v=4
 url: https://raw.githubusercontent.com/api-evangelist/realself/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment
 specificationVersion: '0.20'
 created: '2026-08-26'
 modified: '2026-08-26'
 tags:
 - Company
-apis: []
+- Healthcare
+- Aesthetics
+- Marketplace
+- Reviews
+- Lead Generation
+- Consumer Health
+- Webhooks
+- JSON Schema
+apis:
+- aid: realself-lead-sharing
+  name: RealSelf Lead Sharing
+  description: 'RealSelf Lead Sharing publishes a notification to a partner-owned HTTPS
+    endpoint every time a new patient lead is created on the platform. Delivery is over
+    an Amazon SNS topic subscription: the subscriber confirms the subscription once via
+    the SNS SubscribeURL handshake, then receives Notification messages whose MessageText
+    is a JSON-stringified lead payload — lead id, channel, consultation types, comments,
+    practice, provider, prospect and treatment — together with a callback URL and a JWS
+    token used to post updates back against the lead. RealSelf publishes the payload
+    contract as a JSON Schema 2020-12 document and a working .NET subscriber example on
+    its GitHub organization.'
+  humanURL: https://github.com/RealSelf/rs-lead-sharing-subscriber-example
+  baseURL: https://api.realself.com/v1
+  tags:
+  - Leads
+  - Webhooks
+  - Events
+  - Healthcare
+  properties:
+  - type: JSONSchema
+    url: json-schema/realself-new-lead-webhook-1-0-0.json
+  - type: JSONSchema
+    url: json-schema/realself-event-1-0-0.json
+  - type: JSONSchema
+    url: json-schema/realself-pages-page-1-0-0.json
+  - type: JSONSchema
+    url: json-schema/realself-pages-view-1-0-0.json
+  - type: JSONSchema
+    url: json-schema/realself-pages-interaction-1-0-0.json
+  - type: AsyncAPI
+    url: asyncapi/realself-lead-sharing-asyncapi.yml
+  - type: Webhooks
+    url: asyncapi/realself-lead-sharing-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/RealSelf/rs-lead-sharing-subscriber-example
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -20,4 +72,47 @@ maintainers:
   email: info@apis.io
 common:
 - type: Website
-  url: https://forgeglobal.com/realself_stock/
+  url: https://www.realself.com/
+- type: Blog
+  url: https://www.realself.com/news
+- type: Documentation
+  url: https://github.com/RealSelf/rs-lead-sharing-subscriber-example
+- type: GitHubOrganization
+  url: https://github.com/RealSelf
+- type: TermsOfService
+  url: https://www.realself.com/terms-of-service
+- type: Security
+  url: https://www.realself.com/security/
+- type: SecurityTxt
+  url: well-known/realself-security.txt
+- type: WellKnown
+  url: well-known/realself-well-known.yml
+- type: VulnerabilityDisclosure
+  url: security/realself-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/realself-domain-security.yml
+- type: Authentication
+  url: authentication/realself-authentication.yml
+- type: Conventions
+  url: conventions/realself-conventions.yml
+- type: ErrorCatalog
+  url: errors/realself-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/realself-lifecycle.yml
+- type: Conformance
+  url: conformance/realself-conformance.yml
+- type: DataModel
+  url: data-model/realself-data-model.yml
+- type: Packages
+  url: packages/realself-packages.yml
+- type: Plans
+  url: plans/realself-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/realself-rate-limits.yml
+- type: LLMsTxt
+  url: llms/realself-llms.txt
+x-enrichment:
+  date: '2026-08-26'
+  status: enriched
+  artifacts_added: 22
+  pass: local-v1

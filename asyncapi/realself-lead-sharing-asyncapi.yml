@@ -1,0 +1,172 @@
+# generated: '2026-08-26'
+# method: derived
+# source: >-
+#   https://api.realself.com/v1/schemas/leads/new-lead-webhook/1-0-0.json (payload contract,
+#   served 200 by RealSelf) and https://github.com/RealSelf/rs-lead-sharing-subscriber-example
+#   (RealSelf's own subscriber reference implementation, which documents the SNS delivery,
+#   the SubscriptionConfirmation handshake and the signature-validation requirement).
+#   RealSelf publishes no AsyncAPI document of its own; this description was derived by
+#   API Evangelist from the two artifacts above. No channel, field or semantic here is
+#   invented — every property comes from the published JSON Schema, and every header and
+#   handshake step from RealSelf's published README.
+asyncapi: 3.0.0
+info:
+  title: RealSelf Lead Sharing
+  version: 1.0.0
+  description: >-
+    Event surface RealSelf exposes to partner practices, practice-management systems and
+    lead-routing vendors. When a consumer submits a consultation request on realself.com,
+    RealSelf publishes a New Lead Webhook notification to an Amazon SNS topic; each partner
+    subscribes an HTTPS endpoint to that topic. The subscriber confirms once via the SNS
+    SubscriptionConfirmation handshake, then receives Notification messages whose `Message`
+    property is a JSON-stringified New Lead payload plus a `callback` URL and a JWS `token`
+    for posting lead updates back to RealSelf.
+  contact:
+    name: RealSelf
+    url: https://github.com/RealSelf/rs-lead-sharing-subscriber-example
+    email: contactus@realself.com
+  termsOfService: https://www.realself.com/terms-of-service
+  license:
+    name: MIT
+    url: https://github.com/RealSelf/rs-lead-sharing-subscriber-example/blob/main/LICENSE.md
+  x-derived-by: API Evangelist
+  x-provider-published: false
+servers:
+  sns:
+    host: sns.us-west-2.amazonaws.com
+    protocol: https
+    protocolVersion: '1.1'
+    description: >-
+      Amazon SNS in us-west-2 fans the notification out to each subscribed partner endpoint.
+      Observed topic ARN prefix in RealSelf's published example:
+      arn:aws:sns:us-west-2:696689688494:rs-lead-sharing-*.
+  subscriber:
+    host: '{subscriberHost}'
+    protocol: https
+    description: >-
+      The partner-operated HTTPS endpoint that receives the SNS POST. RealSelf's reference
+      subscriber mounts it at POST /api/Lead; the path is chosen by the partner.
+    variables:
+      subscriberHost:
+        description: Hostname of the partner endpoint registered with RealSelf.
+        default: subscriber.example.com
+channels:
+  leadSharing:
+    address: 'arn:aws:sns:us-west-2:{account}:rs-lead-sharing-{partner}'
+    title: RealSelf lead sharing topic
+    description: >-
+      SNS topic RealSelf publishes new leads to. One subscription per partner endpoint.
+    servers:
+      - $ref: '#/servers/sns'
+    messages:
+      subscriptionConfirmation:
+        $ref: '#/components/messages/SubscriptionConfirmation'
+      newLead:
+        $ref: '#/components/messages/NewLeadNotification'
+operations:
+  confirmSubscription:
+    action: receive
+    channel:
+      $ref: '#/channels/leadSharing'
+    summary: Confirm the SNS subscription (one time).
+    description: >-
+      Sent once when the subscription is created. The subscriber must validate the message
+      signature and then GET the `SubscribeURL` in the body to activate delivery.
+    messages:
+      - $ref: '#/channels/leadSharing/messages/subscriptionConfirmation'
+  receiveNewLead:
+    action: receive
+    channel:
+      $ref: '#/channels/leadSharing'
+    summary: Receive a new patient lead.
+    description: >-
+      Delivered every time a new lead is created. The subscriber must validate the SNS
+      signature before trusting the payload, then JSON-parse the `Message` string into the
+      New Lead Webhook object.
+    messages:
+      - $ref: '#/channels/leadSharing/messages/newLead'
+components:
+  messages:
+    SubscriptionConfirmation:
+      name: SubscriptionConfirmation
+      title: SNS subscription confirmation
+      contentType: text/plain; charset=UTF-8
+      headers:
+        type: object
+        properties:
+          x-amz-sns-message-type:
+            type: string
+            const: SubscriptionConfirmation
+          x-amz-sns-message-id:
+            type: string
+          x-amz-sns-topic-arn:
+            type: string
+        required: [x-amz-sns-message-type, x-amz-sns-message-id, x-amz-sns-topic-arn]
+      payload:
+        type: object
+        properties:
+          Type: { type: string, const: SubscriptionConfirmation }
+          MessageId: { type: string }
+          Token: { type: string }
+          TopicArn: { type: string }
+          Message: { type: string }
+          SubscribeURL:
+            type: string
+            format: uri
+            description: GET this URL to confirm and activate the subscription.
+          Timestamp: { type: string, format: date-time }
+          SignatureVersion: { type: string }
+          Signature: { type: string }
+          SigningCertURL: { type: string, format: uri }
+    NewLeadNotification:
+      name: NewLeadNotification
+      title: New lead notification
+      contentType: text/plain; charset=UTF-8
+      headers:
+        type: object
+        properties:
+          x-amz-sns-message-type:
+            type: string
+            const: Notification
+          x-amz-sns-message-id:
+            type: string
+          x-amz-sns-topic-arn:
+            type: string
+          x-amz-sns-subscription-arn:
+            type: string
+        required: [x-amz-sns-message-type, x-amz-sns-message-id, x-amz-sns-topic-arn]
+      payload:
+        type: object
+        description: >-
+          SNS envelope. The lead itself is a JSON-encoded STRING in `Message`, described by
+          the New Lead Webhook JSON Schema RealSelf publishes.
+        properties:
+          Type: { type: string, const: Notification }
+          MessageId: { type: string }
+          TopicArn: { type: string }
+          Subject: { type: string }
+          Message:
+            type: string
+            description: >-
+              JSON-stringified New Lead Webhook document. Contract:
+              https://api.realself.com/v1/schemas/leads/new-lead-webhook/1-0-0.json
+              (saved verbatim at json-schema/realself-new-lead-webhook-1-0-0.json).
+          Timestamp: { type: string, format: date-time }
+          SignatureVersion: { type: string }
+          Signature: { type: string }
+          SigningCertURL: { type: string, format: uri }
+          UnsubscribeURL: { type: string, format: uri }
+          MessageAttributes: { type: object }
+      x-message-schema:
+        schemaFormat: application/schema+json;version=draft/2020-12
+        url: https://api.realself.com/v1/schemas/leads/new-lead-webhook/1-0-0.json
+        file: json-schema/realself-new-lead-webhook-1-0-0.json
+  securitySchemes:
+    snsMessageSignature:
+      type: httpApiKey
+      in: header
+      name: x-amz-sns-message-type
+      description: >-
+        SNS signs every message; subscribers verify with the AWS SDK
+        (`Message.ParseMessage(...).IsMessageSignatureValid()` in RealSelf's example) against
+        the certificate at `SigningCertURL`. Unsigned or invalid messages must be rejected 401.

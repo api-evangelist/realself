@@ -1,0 +1,119 @@
+generated: '2026-08-26'
+method: derived
+source: json-schema/*.json (harvested verbatim from https://api.realself.com/v1/schemas)
+summary: >-
+  Entity graph derived from the five JSON Schema documents RealSelf serves publicly. Two
+  disjoint domains are visible: the partner-facing LEAD domain (the New Lead Webhook), and an
+  internal ANALYTICS/EVENT domain (a generic event envelope plus page/view/interaction
+  payloads). No REST object reference is published, so no id prefixes or resource URLs beyond
+  the callback are documented.
+domains:
+- name: leads
+  schema: json-schema/realself-new-lead-webhook-1-0-0.json
+  entry: NewLeadWebhook
+- name: events
+  schema: json-schema/realself-event-1-0-0.json
+  entry: Event
+- name: pages
+  schemas:
+  - json-schema/realself-pages-page-1-0-0.json
+  - json-schema/realself-pages-view-1-0-0.json
+  - json-schema/realself-pages-interaction-1-0-0.json
+  entry: PageView
+entities:
+- name: NewLeadWebhook
+  domain: leads
+  description: Top-level webhook document published when a new lead is created.
+  fields:
+  - { name: lead, type: object, required: true }
+  - { name: callback, type: string, required: true, note: URL for sending updates to this lead }
+  - { name: token, type: string, required: true, note: JWS token for validation and callback }
+- name: Lead
+  domain: leads
+  id_field: id
+  id_type: string
+  fields:
+  - { name: id, type: string, required: true }
+  - { name: channel, type: string, required: true, enum: [web, connect] }
+  - { name: consultation_type, type: 'array<string>' }
+  - { name: comments, type: string }
+- name: Practice
+  domain: leads
+  id_field: id
+  fields: [id, name, city, state]
+  required: [id, name, city, state]
+- name: Provider
+  domain: leads
+  id_field: id
+  fields: [id, name]
+  required: [id, name]
+  note: >-
+    "The provider/doctor for this lead. If no provider was chosen, this will not be present."
+    RealSelf's published notification example also carries city/state on provider, which the
+    schema does not declare — a schema/payload divergence recorded, not corrected.
+- name: Prospect
+  domain: leads
+  fields: [email, phone, name, location, state, country]
+  required: []
+  pii: true
+  note: >-
+    Every field on this entity is direct consumer PII (name, email, phone, location) tied to
+    an inferred interest in a specific medical treatment. No field is marked required.
+- name: Treatment
+  domain: leads
+  id_field: id
+  fields: [id, name]
+  required: [id, name]
+- name: Event
+  domain: events
+  id_field: id
+  fields: [id, domain, name, entity, originator, occurredAt, requestId, applicationId]
+  required: [id, domain, name, entity, originator, occurredAt, requestId, applicationId]
+- name: EventEntity
+  domain: events
+  fields: [id, uri, schema, before, after]
+  required: [id, uri, schema]
+  note: 'Carries a before/after state pair plus a self URI and a schema URI.'
+- name: Originator
+  domain: events
+  fields: [id, uri, schema, roles, visitorId]
+  required: [id, uri, schema]
+- name: Page
+  domain: pages
+  fields: [url, ipAddress]
+  required: [url, ipAddress]
+  note: ipAddress is documented as a hashed IP address.
+- name: PageView
+  domain: pages
+  fields: [page, referrer, backend, acceptLanguage, geoLocation, userAgent]
+  required: [referrer, backend, acceptLanguage, geoLocation, userAgent]
+- name: PageInteraction
+  domain: pages
+  fields: [element, page, related]
+  required: [element]
+- name: Element
+  domain: pages
+  fields: [id, tag, label, value, action]
+relationships:
+- { from: NewLeadWebhook, to: Lead, type: has_one, via: lead }
+- { from: Lead, to: Practice, type: has_one, via: practice }
+- { from: Lead, to: Provider, type: has_one, via: provider, optional: true }
+- { from: Lead, to: Prospect, type: has_one, via: prospect }
+- { from: Lead, to: Treatment, type: has_one, via: treatment }
+- { from: Event, to: EventEntity, type: has_one, via: entity }
+- { from: Event, to: Originator, type: has_one, via: originator }
+- { from: PageView, to: Page, type: has_one, via: page, ref: 'https://api.realself.com/schemas/pages/page/1-0-0' }
+- { from: PageInteraction, to: Page, type: has_one, via: page, ref: 'http://api.realself.com/schemas/pages/page/1-0-0' }
+- { from: PageInteraction, to: Element, type: has_one, via: element }
+- { from: PageInteraction, to: Element, type: has_many, via: related }
+identifiers:
+  style: opaque numeric strings
+  observed_examples:
+    lead: '3412448'
+    provider: '7039'
+    treatment: '282'
+  prefixed: false
+  note: Ids are numeric strings with no type prefix; a bare id is not self-describing.
+gaps:
+- No REST object reference or resource URL scheme is published for these entities.
+- The `uri` fields on EventEntity/Originator promise a GET endpoint that is not publicly reachable.

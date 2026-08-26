@@ -1,0 +1,74 @@
+# RealSelf
+
+> RealSelf is a Seattle-based consumer marketplace for elective aesthetic treatments —
+> plastic surgery, cosmetic dermatology, injectables, cosmetic dentistry, hair restoration
+> and vision correction. Consumers research procedures through reviews, before-and-after
+> photo galleries, doctor Q&A and the Worth It rating, then request consultations from
+> roughly 30,000 registered doctors and practices.
+
+RealSelf does NOT run a public developer program. There is no OpenAPI, no developer portal,
+no API key signup and no MCP server. Its entire machine-readable surface is:
+
+1. A partner **Lead Sharing** integration that pushes new patient leads to a partner-operated
+   HTTPS endpoint over Amazon SNS. Onboarding is sales-mediated, not self-service.
+2. A **JSON Schema registry** served anonymously at `https://api.realself.com/v1/schemas`,
+   carrying the Lead Sharing payload contract and RealSelf's internal event/page envelopes.
+
+Everything else on `api.realself.com` is an AWS API Gateway edge that answers unmatched
+routes with HTTP 403 `{"message":"Missing Authentication Token"}`. The marketing host
+`www.realself.com` serves a reCAPTCHA interstitial to non-browser clients on all app paths.
+
+## APIs
+
+- [RealSelf Lead Sharing](https://github.com/RealSelf/rs-lead-sharing-subscriber-example): SNS-delivered new-lead notifications; base `https://api.realself.com/v1`
+
+## Specs
+
+- [New Lead Webhook JSON Schema (2020-12)](https://api.realself.com/v1/schemas/leads/new-lead-webhook/1-0-0.json): the lead payload contract — lead, practice, provider, prospect, treatment, callback, token
+- [Event envelope JSON Schema (2019-09)](https://api.realself.com/v1/schemas/event/1-0-0.json): internal domain-event envelope — id, domain, name, entity(before/after), originator, occurredAt, requestId, applicationId
+- [Page JSON Schema](https://api.realself.com/v1/schemas/pages/page/1-0-0.json): common page-event properties (url, hashed ipAddress)
+- [Page view JSON Schema](https://api.realself.com/v1/schemas/pages/view/1-0-0.json): referrer, backend, acceptLanguage, geoLocation, parsed userAgent
+- [Page interaction JSON Schema](https://api.realself.com/v1/schemas/pages/interaction/1-0-0.json): element (tag/action/label/value) plus related elements
+- [Schema index](https://api.realself.com/v1/schemas): JSON array of every published schema path
+
+## Docs
+
+- [Lead Sharing subscriber reference implementation](https://github.com/RealSelf/rs-lead-sharing-subscriber-example): .NET 6 example — SNS SubscriptionConfirmation handshake, signature validation, payload models
+- [RealSelf on GitHub](https://github.com/RealSelf): 36 public repositories; no first-party SDK
+- [Provider advertising](https://www.realself.com/dr/advertise): the sales surface Lead Sharing is provisioned through
+- [Terms of Service](https://www.realself.com/terms-of-service)
+- [Security policy](https://www.realself.com/security/) and [security.txt](https://www.realself.com/.well-known/security.txt)
+- [RealSelf News](https://www.realself.com/news)
+
+## How the Lead Sharing contract works
+
+- Delivery: Amazon SNS (us-west-2) HTTPS subscription to a partner endpoint.
+- One-time handshake: a `SubscriptionConfirmation` message; validate the signature, then GET
+  the `SubscribeURL`.
+- Steady state: `Notification` messages with headers `x-amz-sns-message-type`,
+  `x-amz-sns-message-id`, `x-amz-sns-topic-arn`, `x-amz-sns-subscription-arn`.
+- The lead is a JSON-encoded STRING in the envelope's `Message` property; parse it against the
+  New Lead Webhook schema.
+- Authentication inbound: SNS message signature only. Reject invalid signatures with 401.
+- Authentication outbound: a per-lead ES512 JWS `token` (claims `lead_id`, `exp`) used against
+  the supplied `callback` URL.
+- `lead.channel` is an enum: `web` | `connect`.
+- Every prospect field is consumer PII attached to an inferred interest in a named medical
+  treatment. Handle accordingly.
+
+## Known gaps (as of 2026-08-26)
+
+- No OpenAPI, no AsyncAPI published by RealSelf (the AsyncAPI in this profile is derived).
+- No idempotency, pagination, rate-limit or error-code documentation.
+- No status page, no deprecation/sunset policy, no SLA, no API changelog.
+- No published plans or developer pricing; provider advertising is contact-sales.
+- security.txt omits the RFC 9116 `Expires` field, and the Bugcrowd program it advertises
+  (`https://bugcrowd.com/realself`) returned 404 on 2026-08-26.
+- The request body, HTTP method and reversibility of the lead-update callback are undocumented.
+
+## API Evangelist profile
+
+- [apis.yml](https://raw.githubusercontent.com/api-evangelist/realself/refs/heads/main/apis.yml)
+- Artifacts in this repository: `json-schema/`, `asyncapi/`, `authentication/`, `conventions/`,
+  `conformance/`, `data-model/`, `errors/`, `lifecycle/`, `packages/`, `plans/`,
+  `rate-limits/`, `sandbox/`, `security/`, `well-known/`, `mcp/`

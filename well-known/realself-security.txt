@@ -1,0 +1,4 @@
+Contact: security@realself.com
+Preferred-Languages: en
+Policy: https://www.realself.com/security/
+Policy: https://bugcrowd.com/realself

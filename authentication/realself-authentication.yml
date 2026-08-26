@@ -1,0 +1,63 @@
+generated: '2026-08-26'
+method: searched
+source: >-
+  https://github.com/RealSelf/rs-lead-sharing-subscriber-example (RealSelf's published
+  subscriber reference implementation) and
+  https://api.realself.com/v1/schemas/leads/new-lead-webhook/1-0-0.json
+summary: >-
+  RealSelf publishes no public developer program, no API key issuance flow and no OAuth
+  surface. The one documented integration — Lead Sharing — uses two distinct, non-interactive
+  credentials, neither of which a developer requests self-service: inbound messages are
+  authenticated by the Amazon SNS message signature, and the callback that lets a partner
+  post updates back is authorised by a short-lived JWS token RealSelf mints per lead.
+  Everything else on api.realself.com is closed: any unmatched route answers HTTP 403
+  {"message":"Missing Authentication Token"} (an AWS API Gateway route miss).
+schemes:
+- id: sns-message-signature
+  type: message-signature
+  applies_to: inbound Lead Sharing notifications (RealSelf -> partner endpoint)
+  transport: https POST from "Amazon Simple Notification Service Agent"
+  description: >-
+    Every SNS message carries Signature, SignatureVersion and SigningCertURL. RealSelf's own
+    example validates with the AWS SDK before processing and returns 401 Unauthorized on
+    failure. This is the only authentication on the inbound leg — there is no shared secret,
+    bearer token or mTLS between RealSelf and the partner endpoint.
+  headers:
+  - x-amz-sns-message-type
+  - x-amz-sns-message-id
+  - x-amz-sns-topic-arn
+  - x-amz-sns-subscription-arn
+  verification: Amazon.SimpleNotificationService.Util.Message.IsMessageSignatureValid()
+  evidence: https://github.com/RealSelf/rs-lead-sharing-subscriber-example#processing-notification
+- id: lead-callback-jws
+  type: jws-token
+  applies_to: outbound lead-update callback (partner -> RealSelf)
+  description: >-
+    Each notification carries a `callback` URL and a `token`. The token is a detached-style
+    JWS whose header declares alg ES512, typ JOSE+JSON, a kid, and a jku pointing at a JWKS
+    document; its payload carries `lead_id` and an `exp`. The token is also appended to the
+    callback URL as a `token` query parameter in RealSelf's published example.
+  algorithm: ES512
+  token_location: query parameter `token` on the callback URL, and the `token` payload field
+  claims:
+  - lead_id
+  - exp
+  jwks:
+    jku_observed: https://api.rsdev.co/.well-known/jwks.json
+    note: >-
+      The jku in RealSelf's published example points at their DEVELOPMENT host (api.rsdev.co).
+      Neither that URL nor https://api.realself.com/.well-known/jwks.json is anonymously
+      readable — both return 403 Missing Authentication Token — so key material cannot be
+      verified from outside an onboarded partner account.
+  expiry: short-lived (exp claim present in the published example token)
+  evidence: json-schema/realself-new-lead-webhook-1-0-0.json (properties.token)
+onboarding:
+  self_service: false
+  model: >-
+    Partner onboarding is sales-mediated. RealSelf provisions the SNS topic and subscribes the
+    partner's endpoint; there is no developer signup, key dashboard or public request flow.
+  contact: https://www.realself.com/dr/advertise
+oauth2: false
+openid_connect: false
+api_keys: false
+mutual_tls: false

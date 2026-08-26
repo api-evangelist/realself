@@ -1,0 +1,61 @@
+generated: '2026-08-26'
+method: probed
+source: live anonymous requests to https://api.realself.com/* on 2026-08-26
+format: aws-api-gateway
+rfc9457: false
+summary: >-
+  RealSelf publishes no error reference. This catalog records only error responses actually
+  observed on the anonymously reachable surface of api.realself.com. The envelope is the AWS
+  API Gateway default — a single `message` string — and it is not application/problem+json.
+envelope:
+  media_type: application/json
+  shape: '{"message": "<string>"}'
+  fields:
+  - name: message
+    type: string
+  no_error_code: true
+  no_type_uri: true
+  no_trace_id: true
+problems:
+- status: 403
+  code: null
+  title: Missing Authentication Token
+  body: '{"message":"Missing Authentication Token"}'
+  meaning: >-
+    AWS API Gateway's response for a route that does not exist OR exists but requires a
+    signed/authorized request. The two cases are indistinguishable from outside, which is why
+    no negative conclusion about a specific endpoint can be drawn from a 403 on this host.
+  observed_on:
+  - https://api.realself.com/
+  - https://api.realself.com/v1/
+  - https://api.realself.com/openapi.json
+  - https://api.realself.com/.well-known/jwks.json
+  - https://api.realself.com/graphql
+  - https://api.realself.com/mcp
+  remediation: >-
+    Use a provisioned partner integration path. Anonymous callers can only reach
+    /v1/schemas and /v1/schemas/<path>.
+- status: 502
+  code: null
+  title: Internal server error
+  body: '{"message": "Internal server error"}'
+  meaning: >-
+    Returned by the schema registry for a directory-style path that is not a leaf schema
+    document — the backing Lambda errors instead of returning a listing or a 404.
+  observed_on:
+  - https://api.realself.com/v1/schemas/event/
+  remediation: Request the leaf document, e.g. /v1/schemas/event/1-0-0.json.
+- status: 401
+  code: null
+  title: Signature not valid
+  body: plain text
+  meaning: >-
+    Not a RealSelf response — this is the response RealSelf's own published subscriber
+    reference implementation returns when an inbound SNS message fails signature validation.
+    Recorded because it is the documented failure mode of the partner side of the contract.
+  source: https://github.com/RealSelf/rs-lead-sharing-subscriber-example
+  direction: partner-endpoint -> RealSelf
+gaps:
+- No published error-code registry.
+- No error codes, type URIs, correlation ids or retry guidance in the envelope.
+- No documented 4xx/5xx contract for the per-lead callback endpoint.

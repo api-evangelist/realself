@@ -1,0 +1,56 @@
+generated: '2026-08-26'
+method: searched
+source: >-
+  live probes of realself.com / api.realself.com and
+  https://github.com/RealSelf/rs-lead-sharing-subscriber-example
+summary: >-
+  RealSelf runs no public API lifecycle program. There is no status page, no versioning
+  policy document, no deprecation or sunset policy, no SLA and no API changelog. Versioning
+  exists only as a convention visible in the URLs.
+versioning:
+  scheme: url-path
+  current: v1
+  evidence: https://api.realself.com/v1/schemas
+  policy_published: false
+  schema_versioning:
+    scheme: semver-in-path
+    current: 1-0-0
+    note: Every published schema is at 1-0-0; no superseded version has been observed.
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  note: >-
+    No RFC 8594 Sunset/Deprecation header support is documented and none was observed on any
+    anonymously reachable response.
+status_page:
+  published: false
+  probes:
+  - url: https://status.realself.com/
+    status: dns-nxdomain
+    note: hostname does not resolve
+  - url: https://trust.realself.com/
+    status: dns-nxdomain
+sla:
+  published: false
+support:
+  security_contact: security@realself.com
+  general_contact: contactus@realself.com
+  note: >-
+    Partner/practice support runs through RealSelf's provider sales surface
+    (https://www.realself.com/dr/advertise), not a developer support channel.
+changelog:
+  api_changelog_published: false
+  note: >-
+    RealSelf publishes an editorial newsroom at https://www.realself.com/news (HTTP 200) and
+    a corporate blog at https://atwork.realself.com. Neither is an API changelog, so no
+    ChangeLog pointer is emitted.
+end_of_life:
+  announced: false
+company_status:
+  operating: true
+  note: >-
+    RealSelf is an independent private company (Seattle, founded 2006), rebranded in 2025 and
+    not acquired as of 2026. The repo was harvested from a secondary-market share listing.

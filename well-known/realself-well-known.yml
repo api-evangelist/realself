@@ -1,0 +1,58 @@
+generated: '2026-08-26'
+method: searched
+source: live probes of /.well-known/* on every host in apis.yml
+summary: >-
+  RealSelf serves a real RFC 9116 security.txt on the www and apex marketing hosts. Nothing
+  else on the /.well-known surface is served on any host. The API host (api.realself.com,
+  an AWS API Gateway edge) answers every unmatched route — including every /.well-known/*
+  path — with HTTP 403 {"message":"Missing Authentication Token"}, which is a route miss,
+  not a document. Note that a JWKS is genuinely in use by the Lead Sharing callback token:
+  the JWS header in RealSelf's published example carries jku
+  https://api.rsdev.co/.well-known/jwks.json (their development host), but neither that URL
+  nor the production equivalent is anonymously readable.
+hit_count: 1
+hosts:
+- host: https://www.realself.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    file: realself-security.txt
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/mcp.json
+    status: 404
+- host: https://realself.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    file: realself-security.txt
+  - path: /.well-known/agent-card.json
+    status: 404
+- host: https://api.realself.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+    note: AWS API Gateway "Missing Authentication Token" — unmatched route, not a document
+  - path: /.well-known/jwks.json
+    status: 403
+    note: >-
+      A JWKS is referenced by the jku claim of the Lead Sharing callback JWS, but it is not
+      anonymously served on the production host.
+  - path: /.well-known/oauth-authorization-server
+    status: 403
+  - path: /.well-known/openid-configuration
+    status: 403
+  - path: /.well-known/api-catalog
+    status: 403
+  - path: /.well-known/agent-card.json
+    status: 403

@@ -1,0 +1,55 @@
+generated: '2026-08-26'
+method: searched
+source: >-
+  npm registry search, PyPI, and https://github.com/RealSelf (36 public repositories reviewed)
+summary: >-
+  RealSelf publishes no first-party client library on any public package registry. The npm
+  registry search for "realself" returns zero packages; pypi.org/pypi/realself/json returns
+  404. The company's GitHub organization holds 36 public repositories, but they are forks of
+  third-party projects (Guzzle, Slim, php-amqplib, dbt, kitchen-docker), internal tooling, or
+  wrappers around OTHER vendors' APIs (Looker, Brightcove, Sinter) — none is a client for a
+  RealSelf API. The only first-party integration artifact is a runnable EXAMPLE application,
+  not a distributable package.
+package_count: 0
+official_sdk_count: 0
+packages: []
+registries_checked:
+- { registry: npm, query: realself, result: 0 matches, checked: '2026-08-26' }
+- { registry: pypi, package: realself, status: 404, checked: '2026-08-26' }
+related_first_party_repositories:
+- name: rs-lead-sharing-subscriber-example
+  url: https://github.com/RealSelf/rs-lead-sharing-subscriber-example
+  language: csharp
+  official: true
+  is_package: false
+  registry: null
+  version: null
+  published: null
+  license: MIT
+  note: >-
+    RealSelf's own .NET 6 reference subscriber for Lead Sharing. It is a sample application
+    (Controllers/Models/Dockerfile), not published to NuGet and not versioned or tagged, so
+    there is no registry metadata endpoint to read a version or release date from — recorded
+    as null after checking, not left unchecked. This is the only RealSelf repository that
+    implements a RealSelf API contract.
+- name: realclump
+  url: https://github.com/RealSelf/realclump
+  language: javascript
+  official: true
+  is_package: false
+  registry: null
+  version: null
+  published: null
+  note: >-
+    Chrome extension for opening multiple links; unrelated to any RealSelf API. Most recently
+    updated repo in the org (Jan 2026), which is the strongest available signal that the org
+    is still maintained even though no SDK ships from it.
+abandonment_signal:
+  assessment: >-
+    Not applicable in the usual form — there is no first-party SDK whose release date could
+    lag the API. The relevant currency signal is that the sole integration artifact
+    (rs-lead-sharing-subscriber-example) has not been touched since June 2022, while the
+    payload contract it implements is still served live at 1-0-0.
+no_sdk_pointer_reason: >-
+  No `SDKs` pointer is emitted. The sdk_count checks assert the provider ships a client
+  library; RealSelf ships none, and a pointer here would be a false claim.

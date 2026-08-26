@@ -1,0 +1,33 @@
+generated: '2026-08-26'
+method: probed
+source: >-
+  live anonymous responses from https://api.realself.com/v1/schemas on 2026-08-26; no
+  published rate-limit documentation exists to search.
+summary: >-
+  RealSelf documents no rate limits. No rate-limit response headers were returned on any
+  anonymously reachable route of api.realself.com, so an agent has no runtime signal to back
+  off on. The inbound Lead Sharing leg is push (SNS -> partner), where throughput is governed
+  by Amazon SNS delivery-retry behaviour rather than by a RealSelf-published quota.
+limit_count: 0
+limits: []
+headers:
+  observed: []
+  documented: []
+  retry_after: false
+exhaustion_status_code: null
+probes:
+- url: https://api.realself.com/v1/schemas
+  status: 200
+  rate_limit_headers: none
+- url: https://api.realself.com/v1/schemas/leads/new-lead-webhook/1-0-0.json
+  status: 200
+  rate_limit_headers: none
+notes:
+- >-
+  api.realself.com is an AWS API Gateway edge; AWS applies account/stage throttling by default
+  and returns 429 with no RateLimit-* headers, but RealSelf publishes no stage limits so no
+  number can be recorded here honestly.
+- >-
+  For the push leg, an integrating partner should size for SNS at-least-once delivery and its
+  retry policy, not for a RealSelf quota. RealSelf documents neither a burst nor a per-partner
+  ceiling.

@@ -1,0 +1,28 @@
+generated: '2026-08-26'
+method: searched
+status: none
+summary: >-
+  RealSelf publishes no MCP server — no hosted endpoint, no stdio package, and no registry
+  listing. Nor is there an OpenAPI from which a candidate tool list could be derived: the only
+  machine-readable contracts RealSelf serves are JSON Schemas for a push webhook and internal
+  event envelopes, which describe payloads rather than callable operations. This file records
+  the absence; no `MCPServer` pointer is emitted in apis.yml, because that pointer asserts a
+  server the provider does not run.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: probed
+tools: []
+probes:
+- url: https://api.realself.com/mcp
+  status: 403
+  note: AWS API Gateway "Missing Authentication Token" route miss, not an MCP endpoint
+- url: https://www.realself.com/.well-known/mcp.json
+  status: 404
+- url: 'npm registry search: realself'
+  status: 0 matches
+derivation_blocked_by: >-
+  No OpenAPI or other operation-bearing contract exists to derive candidate tools from.

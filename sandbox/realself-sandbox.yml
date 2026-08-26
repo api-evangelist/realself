@@ -1,0 +1,63 @@
+generated: '2026-08-26'
+method: searched
+source: >-
+  https://github.com/RealSelf/rs-lead-sharing-subscriber-example and its
+  notification.example.json
+summary: >-
+  RealSelf publishes no self-service sandbox, no test-key scheme and no developer console. What
+  it does publish is a runnable local subscriber and one complete example notification, which
+  together let a partner exercise the full inbound contract offline before RealSelf provisions
+  a live subscription. A separate development API host is visible in the published example.
+self_service_sandbox: false
+test_keys: false
+key_prefixes: []
+test_cards: false
+test_clocks: false
+local_harness:
+  available: true
+  repository: https://github.com/RealSelf/rs-lead-sharing-subscriber-example
+  runtime: .NET 6.0
+  install: dotnet restore && dotnet run
+  endpoint: POST https://<DOMAIN>/api/Lead
+  storage: Microsoft.EntityFrameworkCore.InMemory (demo purposes)
+  container: Dockerfile included
+  note: >-
+    Runs the real SNS signature-validation path (AWSSDK.SimpleNotificationService), so the
+    handshake and rejection behaviour can be tested without RealSelf involvement.
+fixtures:
+- name: notification.example.json
+  url: https://github.com/RealSelf/rs-lead-sharing-subscriber-example/blob/main/notification.example.json
+  description: >-
+    A complete SNS Notification envelope containing a real-shaped lead payload, callback URL
+    and JWS token. NOT mirrored into this repository: the published example embeds a consumer
+    name, email address and phone number in the prospect object, and a signed token. It is
+    referenced by URL only, per the enrichment PII guardrail.
+- name: schema.json
+  url: https://github.com/RealSelf/rs-lead-sharing-subscriber-example/blob/main/schema.json
+  description: >-
+    Same New Lead Webhook contract RealSelf serves at
+    https://api.realself.com/v1/schemas/leads/new-lead-webhook/1-0-0.json. Saved verbatim from
+    the API host at json-schema/realself-new-lead-webhook-1-0-0.json.
+test_topic:
+  observed: 'arn:aws:sns:us-west-2:696689688494:rs-lead-sharing-webhook-test'
+  message_attribute: 'name: RSTEST'
+  source: the published notification.example.json
+  note: >-
+    RealSelf's own test topic name, visible in the published example. It is not subscribable by
+    a third party; recorded as evidence that a test topic exists in their provisioning flow.
+development_host:
+  host: https://api.rsdev.co
+  observed_in: >-
+    the callback URL and JWS jku of the published example
+    (https://api.rsdev.co/v1/leads/{lead_id}?token=...)
+  anonymously_readable: false
+  probe:
+    url: https://api.rsdev.co/.well-known/jwks.json
+    status: 403
+  note: >-
+    RealSelf's non-production API host. It answers with the same AWS API Gateway route-miss
+    envelope as production, so it is not an open sandbox.
+gaps:
+- No way for a developer to trigger a synthetic lead against a live RealSelf environment.
+- No published test lead ids, test practice/provider ids, or test treatment ids.
+- No documented way to test the outbound callback leg.

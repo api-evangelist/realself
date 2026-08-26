@@ -1,0 +1,28 @@
+generated: '2026-08-26'
+method: searched
+source: https://www.realself.com/dr/advertise
+summary: >-
+  RealSelf publishes no API plans and no developer pricing. There is no developer program to
+  price. The commercial surface adjacent to the machine-readable integration is provider
+  advertising — profile enhancements, ads and lead packages sold to doctors and practices —
+  and RealSelf does not publish rates for it either; the advertise page is a contact-sales
+  form. Lead Sharing is not sold as an API product; it is delivered as part of a provider
+  advertising relationship.
+plan_count: 0
+plans: []
+pricing_model: contact-sales
+developer_pricing_published: false
+api_metered: false
+free_tier: false
+evidence:
+- url: https://www.realself.com/dr/advertise
+  status: 403
+  note: >-
+    Fastly edge serves our crawler a reCAPTCHA "Access has been denied" interstitial for every
+    app path on www.realself.com. The page is live for browsers — /news on the same host
+    returns 200 and the page is referenced across the web — so this is an edge bot policy, not
+    a dead URL. No pricing table could be read from it.
+- url: https://developer.realself.com/
+  status: dns-nxdomain
+- url: https://business.realself.com/
+  status: dns-nxdomain
