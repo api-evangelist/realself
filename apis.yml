@@ -10,6 +10,17 @@ description: 'RealSelf is a Seattle-based consumer healthcare marketplace for el
   integration that publishes new patient leads to a subscriber over Amazon SNS, plus
   a publicly served JSON Schema registry at api.realself.com/v1/schemas covering the
   new-lead webhook payload and the internal event/page-analytics envelopes.'
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://avatars.githubusercontent.com/u/991957?v=4
 url: https://raw.githubusercontent.com/api-evangelist/realself/refs/heads/main/apis.yml
 x-type: company
