@@ -38,6 +38,16 @@ tags:
 - Reviews
 - Lead Generation
 - Consumer Health
+- Webhook
+- JSON-Schema
+tags_raw:
+- Company
+- Healthcare
+- Aesthetics
+- Marketplace
+- Reviews
+- Lead Generation
+- Consumer Health
 - Webhooks
 - JSON Schema
 apis:
@@ -55,6 +65,11 @@ apis:
   humanURL: https://github.com/RealSelf/rs-lead-sharing-subscriber-example
   baseURL: https://api.realself.com/v1
   tags:
+  - Leads
+  - Webhook
+  - Event
+  - Healthcare
+  tags_raw:
   - Leads
   - Webhooks
   - Events
