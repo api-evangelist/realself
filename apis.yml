@@ -1,15 +1,13 @@
 aid: realself
 name: RealSelf
-description: 'RealSelf is a Seattle-based consumer healthcare marketplace for elective
-  aesthetic treatments — plastic surgery, cosmetic dermatology, injectables, cosmetic
-  dentistry, hair restoration and vision correction. Consumers research procedures
-  through community reviews, before-and-after photo galleries, doctor Q&A and the
-  Worth It rating, then request consultations from the roughly 30,000 registered
-  doctors and practices on the platform. RealSelf does not operate a general-purpose
-  public developer program: its machine-readable surface is a partner Lead Sharing
-  integration that publishes new patient leads to a subscriber over Amazon SNS, plus
-  a publicly served JSON Schema registry at api.realself.com/v1/schemas covering the
-  new-lead webhook payload and the internal event/page-analytics envelopes.'
+description: 'RealSelf is a Seattle-based consumer healthcare marketplace for elective aesthetic treatments
+  — plastic surgery, cosmetic dermatology, injectables, cosmetic dentistry, hair restoration and vision
+  correction. Consumers research procedures through community reviews, before-and-after photo galleries,
+  doctor Q&A and the Worth It rating, then request consultations from the roughly 30,000 registered doctors
+  and practices on the platform. RealSelf does not operate a general-purpose public developer program:
+  its machine-readable surface is a partner Lead Sharing integration that publishes new patient leads
+  to a subscriber over Amazon SNS, plus a publicly served JSON Schema registry at api.realself.com/v1/schemas
+  covering the new-lead webhook payload and the internal event/page-analytics envelopes.'
 deliveryModel:
   model: saas
   open_source: false
@@ -66,17 +64,15 @@ tags_raw:
 - Webhooks
 - JSON Schema
 apis:
-- aid: realself-lead-sharing
+- aid: realself:realself-lead-sharing
   name: RealSelf Lead Sharing
-  description: 'RealSelf Lead Sharing publishes a notification to a partner-owned HTTPS
-    endpoint every time a new patient lead is created on the platform. Delivery is over
-    an Amazon SNS topic subscription: the subscriber confirms the subscription once via
-    the SNS SubscribeURL handshake, then receives Notification messages whose MessageText
-    is a JSON-stringified lead payload — lead id, channel, consultation types, comments,
-    practice, provider, prospect and treatment — together with a callback URL and a JWS
-    token used to post updates back against the lead. RealSelf publishes the payload
-    contract as a JSON Schema 2020-12 document and a working .NET subscriber example on
-    its GitHub organization.'
+  description: 'RealSelf Lead Sharing publishes a notification to a partner-owned HTTPS endpoint every
+    time a new patient lead is created on the platform. Delivery is over an Amazon SNS topic subscription:
+    the subscriber confirms the subscription once via the SNS SubscribeURL handshake, then receives Notification
+    messages whose MessageText is a JSON-stringified lead payload — lead id, channel, consultation types,
+    comments, practice, provider, prospect and treatment — together with a callback URL and a JWS token
+    used to post updates back against the lead. RealSelf publishes the payload contract as a JSON Schema
+    2020-12 document and a working .NET subscriber example on its GitHub organization.'
   humanURL: https://github.com/RealSelf/rs-lead-sharing-subscriber-example
   baseURL: https://api.realself.com/v1
   tags:
