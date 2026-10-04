@@ -10,14 +10,18 @@ description: 'RealSelf is a Seattle-based consumer healthcare marketplace for el
   covering the new-lead webhook payload and the internal event/page-analytics envelopes.'
 deliveryModel:
   model: saas
-  open_source: false
+  license_evidence:
+    not_product:
+    - realself/rs-lead-sharing-subscriber-example
+  open_source: unknown
   commercial: true
   callable_host: false
   label: Hosted service · you call their endpoint
-  confidence: medium
+  confidence: low
   source:
   - pricing
-  generated: '2026-08-28'
+  - repository-not-product
+  generated: '2026-09-25'
   method: derived
 accessModel:
   pricing: unknown
@@ -52,7 +56,7 @@ tags:
 - Lead Generation
 - Consumer Health
 - Webhook
-- JSON-Schema
+- JSON Schema
 tags_raw:
 - Company
 - Healthcare
@@ -63,6 +67,7 @@ tags_raw:
 - Consumer Health
 - Webhooks
 - JSON Schema
+- JSON-Schema
 apis:
 - aid: realself:realself-lead-sharing
   name: RealSelf Lead Sharing
