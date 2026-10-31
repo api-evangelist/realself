@@ -64,5 +64,124 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-RealSelf is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://forgeglobal.com/realself_stock/
+RealSelf is a Seattle-based consumer healthcare marketplace for elective aesthetic treatments — plastic surgery, cosmetic dermatology, injectables, cosmetic dentistry, hair restoration and vision correction. Consumers research procedures through community reviews, before-and-after photo galleries, doctor Q&A and the Worth It rating, then request consultations from the roughly 30,000 registered doctors and practices on the platform. RealSelf does not operate a general-purpose public developer program: its machine-readable surface is a partner Lead Sharing integration that publishes new patient leads to a subscriber over Amazon SNS, plus a publicly served JSON Schema registry at api.realself.com/v1/schemas covering the new-lead webhook payload and the internal event/page-analytics envelopes.
+
+**Areas:** Company · Healthcare · Aesthetics · Marketplace · Reviews · Lead Generation · Consumer Health · Webhook · JSON Schema
+
+## RealSelf on APIs.io
+
+Everything profiled for RealSelf is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/realself/](https://apis.io/providers/realself/)** — or go straight to one of the APIs or properties below.
+
+### APIs (1)
+
+- [RealSelf Lead Sharing](https://apis.io/apis/realself/realself-lead-sharing/) — RealSelf Lead Sharing publishes a notification to a partner-owned HTTPS endpoint every time a new patient lead is created on the platform. Delivery is over…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [RealSelf Lead Sharing](https://apis.io/asyncapis/realself/realself-lead-sharing-asyncapi/)
+
+#### Event channels (1)
+
+Individual events and webhooks the provider emits.
+
+- [arn:aws:sns:us-west-2:{account}:rs-lead-sharing-{partner}](https://apis.io/channels/realself/arn-aws-sns-us-west-2-account-rs-lead-sharing--partner/)
+
+#### JSON Schema (5)
+
+The data models the API reads and writes.
+
+- [Realself Event 1 0 0](https://apis.io/schemas/realself/realself-event-1-0-0/)
+- [New Lead Webhook](https://apis.io/schemas/realself/realself-new-lead-webhook-1-0-0/)
+- [Realself Pages Interaction 1 0 0](https://apis.io/schemas/realself/realself-pages-interaction-1-0-0/)
+- [Realself Pages Page 1 0 0](https://apis.io/schemas/realself/realself-pages-page-1-0-0/)
+- [Realself Pages View 1 0 0](https://apis.io/schemas/realself/realself-pages-view-1-0-0/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Realself Authentication](https://apis.io/security/realself/realself-authentication/)
+- [Realself Domain Security](https://apis.io/security/realself/realself-domain-security/)
+- [Realself Vulnerability Disclosure](https://apis.io/security/realself/realself-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Realself Plans Pricing](https://apis.io/plans/realself/realself-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Realself Rate Limits](https://apis.io/rate-limits/realself/realself-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.realself.com/)
+- [Documentation](https://github.com/RealSelf/rs-lead-sharing-subscriber-example)
+- [Blog](https://www.realself.com/news)
+- [Security](https://www.realself.com/security/)
+- [Terms of service](https://www.realself.com/terms-of-service)
+- [GitHub](https://github.com/RealSelf)
+
+## API Evangelist rating
+
+**Kin Score 31.8** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 52.1 |
+| Contract governance | 4.5 |
+| Operational transparency | 21.1 |
+| Developer ergonomics | 23.8 |
+| Access clarity | 10.5 |
+
+**Agent readiness 21.9** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | derived (partial credit) |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 21.1** — Health
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/realself/](https://apis.io/providers/realself/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for RealSelf: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/realself/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
